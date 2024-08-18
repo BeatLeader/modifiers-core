@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModifiersCore", "ModifiersCore\ModifiersCore.csproj", "{893611BE-2151-4985-8C36-668E6EFB394C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{893611BE-2151-4985-8C36-668E6EFB394C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{893611BE-2151-4985-8C36-668E6EFB394C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{893611BE-2151-4985-8C36-668E6EFB394C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{893611BE-2151-4985-8C36-668E6EFB394C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
