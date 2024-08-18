@@ -71,6 +71,23 @@ public static class ModifiersManager {
         UpdateModifierParams(modifier);
         ModifierAddedEvent?.Invoke(modifier);
     }
+    
+    /// <summary>
+    /// Removes a modifier from the modifiers panel.
+    /// </summary>
+    /// <param name="id">The identifier of a modifier to remove.</param>
+    /// <exception cref="InvalidOperationException">Throws when the specified modifier does not exist.</exception>
+    public static void RemoveModifier(string id) {
+        if (!InternalModifiers.TryGetValue(id, out var modifier)) {
+            throw new InvalidOperationException("A modifier with such key does not exist");
+        }
+        InternalModifiers.Remove(id);
+        //TODO: add proper handling for bound modifiers
+        // (when one modifier is bound to another but another one does not exist)
+        var modifierParams = GetModifierParams(id);
+        modifierParams._multiplier = 0f;
+        ModifierRemovedEvent?.Invoke(modifier);
+    }
 
     private static GameplayModifierParamsSO UpdateModifierParams(ICustomModifier modifier) {
         var modifierParams = GetModifierParams(modifier.Id);
