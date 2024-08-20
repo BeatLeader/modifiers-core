@@ -23,6 +23,7 @@ public class CustomModifierVisualsController : MonoBehaviour {
         _nameText = transform.Find("Name").GetComponent<TMP_Text>();
         _multiplierText = transform.Find("Multiplier").GetComponent<TMP_Text>();
         //
+        DestroyImmediate(GetComponent<SwitchView>());
         _toggle.onValueChanged.AddListener(HandleToggleStateChanged);
         _toggle.stateDidChangeEvent += HandleToggleSelectionStateChanged;
     }
