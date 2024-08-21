@@ -73,6 +73,7 @@ internal class ModifiersCorePanel : MonoBehaviour {
         } else {
             SetModifiersActive(modifier.requiredBy, false);
         }
+        Panel._gameplayModifiers = Panel._gameplayModifiersModel.CreateGameplayModifiers(Panel.GetToggleValueWithGameplayModifierParams);
         Panel._changingGameplayModifierToggles = false;
         Panel.RefreshTotalMultiplierAndRankUI();
     }
