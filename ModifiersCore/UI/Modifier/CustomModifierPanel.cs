@@ -39,8 +39,8 @@ internal class CustomModifierPanel : ModifierPanel {
     #region Callbacks
 
     protected override void HandleToggleStateChanged(bool state) {
-        base.HandleToggleStateChanged(state);
         ModifiersManager.SetModifierState(_modifierId!, state);
+        base.HandleToggleStateChanged(state);
     }
 
     #endregion
