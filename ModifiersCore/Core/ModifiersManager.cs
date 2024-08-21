@@ -15,6 +15,7 @@ public static class ModifiersManager {
     /// Represents a collection of registered modifiers.
     /// </summary>
     public static IReadOnlyCollection<IModifier> Modifiers => AllModifiers.Values;
+
     public static IReadOnlyCollection<ICustomModifier> CustomModifiers => InternalCustomModifiers.Values;
 
     public static event Action<ICustomModifier>? ModifierAddedEvent;
@@ -82,6 +83,7 @@ public static class ModifiersManager {
         InternalCustomModifiers[modifier.Id] = modifier;
         AllModifiers[modifier.Id] = modifier;
         UpdateModifierParams(modifier);
+        ModifierUtils.LinkModifiers(modifier, ModifierParams);
         ModifierAddedEvent?.Invoke(modifier);
     }
 
@@ -95,6 +97,7 @@ public static class ModifiersManager {
             throw new InvalidOperationException("A modifier with such key does not exist");
         }
         InternalCustomModifiers.Remove(id);
+        ModifierUtils.UnlinkModifiers(modifier, ModifierParams);
         //TODO: add proper handling for bound modifiers
         // (when one modifier is bound to another but another one does not exist)
         var modifierParams = GetModifierParams(id);
