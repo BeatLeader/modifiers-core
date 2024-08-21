@@ -80,6 +80,9 @@ public static class ModifiersManager {
         if (HasModifierWithId(modifier.Id)) {
             throw new InvalidOperationException("A modifier with the same key is already added");
         }
+        if (modifier.Id.Length < 2 || modifier.Id.Length > 3) {
+            throw new InvalidOperationException("A modifier key should be 2 or 3 characters long (example: NF)");
+        }
         InternalCustomModifiers[modifier.Id] = modifier;
         AllModifiers[modifier.Id] = modifier;
         UpdateModifierParams(modifier);
@@ -109,13 +112,25 @@ public static class ModifiersManager {
 
     #region Tools
 
+    public static string DefaultModifierLocalizationKeyToId(string modifierLocalizationKey) {
+        if (string.IsNullOrEmpty(modifierLocalizationKey)) return modifierLocalizationKey;
+
+        var idx1 = modifierLocalizationKey.IndexOf('_') + 1;
+        var char1 = modifierLocalizationKey[idx1];
+
+        var idx2 = modifierLocalizationKey.IndexOf('_', idx1) + 1;
+        var char2 = modifierLocalizationKey[idx2];
+
+        return $"{char.ToUpper(char1)}{char.ToUpper(char2)}";
+    }
+
     private static void LoadBaseGameModifiers() {
         var modifiers = Resources.FindObjectsOfTypeAll<GameplayModifierParamsSO>();
         foreach (var modifier in modifiers) {
             var mod = new Modifier(
+                DefaultModifierLocalizationKeyToId(modifier.modifierNameLocalizationKey),
                 modifier.modifierNameLocalizationKey,
-                Localization.Get(modifier.modifierNameLocalizationKey),
-                Localization.Get(modifier.descriptionLocalizationKey),
+                modifier.descriptionLocalizationKey,
                 modifier.icon,
                 modifier.multiplier,
                 MakeIdsArray(modifier.mutuallyExclusives),
@@ -128,7 +143,7 @@ public static class ModifiersManager {
         }
 
         static string[] MakeIdsArray(GameplayModifierParamsSO[] modifiers) {
-            return modifiers.Select(x => x.modifierNameLocalizationKey).ToArray();
+            return modifiers.Select(x => DefaultModifierLocalizationKeyToId(x.modifierNameLocalizationKey)).ToArray();
         }
     }
 
