@@ -32,17 +32,27 @@ public interface IModifier {
     float Multiplier { get; }
 
     /// <summary>
+    /// Represents a collection of categories that cannot be used with this modifier.
+    /// </summary>
+    IEnumerable<string>? Categories { get; }
+
+    /// <summary>
+    /// Represents a collection of categories that cannot be used with this modifier.
+    /// </summary>
+    IEnumerable<string>? MutuallyExclusiveCategories { get; }
+
+    /// <summary>
     /// Represents a collection of modifiers that cannot be used with this modifier.
     /// </summary>
-    IEnumerable<string>? MutuallyExclusives { get; }
+    IEnumerable<string>? MutuallyExclusiveModifiers { get; }
 
     /// <summary>
     /// Represents a collection of modifiers that are required for this one to work.
     /// </summary>
-    IEnumerable<string>? Requires { get; }
+    IEnumerable<string>? RequiresModifiers { get; }
 
     /// <summary>
     /// Represents a collection of modifiers that require this modifier to work.
     /// </summary>
-    IEnumerable<string>? RequiredBy { get; }
+    IEnumerable<string>? RequiredByModifiers { get; }
 }

@@ -1,37 +1,32 @@
-using UnityEngine;
-
 namespace ModifiersCore;
 
-internal class CustomModifierPanel : ModifierPanel {
+internal class CustomModifierPanel : ModifierPanelBase {
     #region Setup
 
+    public override IModifier Modifier => _modifier;
+
     private CustomModifierVisualsController _visualsController = null!;
+    private GameplayModifierToggle _modifierToggle = null!;
 
     protected override void Awake() {
         base.Awake();
         name = "CustomModifier";
-        ModifierToggle.enabled = false;
+        _modifierToggle = gameObject.GetComponent<GameplayModifierToggle>();
+        _modifierToggle.enabled = false;
         _visualsController = gameObject.AddComponent<CustomModifierVisualsController>();
     }
 
     #endregion
 
-    #region Visuals
+    #region Modifier
 
-    private static readonly Color negativeColor = new(1f, 0.35f, 0f);
-    private static readonly Color positiveColor = new(0f, 0.75f, 1f);
+    private ICustomModifier _modifier = null!;
 
-    private string? _modifierId;
-
-    public void SetModifier(ICustomModifier customModifier, GameplayModifierParamsSO gameplayModifier) {
-        _modifierId = customModifier.Id;
-        ModifierToggle._gameplayModifier = gameplayModifier;
-        ModifierToggle.Start();
-        var color = customModifier.Multiplier > 0f ? positiveColor : negativeColor;
-        var backgroundColor = customModifier.Color ?? color;
-        var multiplierColor = customModifier.MultiplierColor ?? color;
-        _visualsController.SetVisuals(backgroundColor, multiplierColor);
-        Toggle.isOn = ModifiersManager.GetModifierState(_modifierId);
+    public void SetModifier(ICustomModifier customModifier) {
+        _modifier = customModifier;
+        _visualsController.SetModifier(customModifier);
+        var modifierActive = ModifiersManager.GetModifierState(customModifier.Id);
+        SetModifierActive(modifierActive);
     }
 
     #endregion
@@ -39,7 +34,7 @@ internal class CustomModifierPanel : ModifierPanel {
     #region Callbacks
 
     protected override void HandleToggleStateChanged(bool state) {
-        ModifiersManager.SetModifierState(_modifierId!, state);
+        ModifiersManager.SetModifierState(_modifier.Id, state);
         base.HandleToggleStateChanged(state);
     }
 
