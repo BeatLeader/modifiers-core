@@ -20,9 +20,11 @@ internal class ModifierPanelSpawner : MonoBehaviour {
     private void LoadExistingModifiers() {
         var toggles = _patcher.ModifiersSection.GetComponentsInChildren<GameplayModifierToggle>();
         foreach (var toggle in toggles) {
-            var panel = toggle.gameObject.AddComponent<ModifierPanel>();
-            var id = ModifiersManager.defaultModifierIds[toggle.gameplayModifier.modifierNameLocalizationKey];
+            var key = toggle.gameplayModifier.modifierNameLocalizationKey;
+            var id = ModifierUtils.GetBaseModifierIdBySerializedName(key);
             var modifier = ModifiersManager.AllModifiers[id];
+            //
+            var panel = toggle.gameObject.AddComponent<ModifierPanel>();
             panel.SetModifier(modifier);
             panel._modifierToggle = toggle;
             _baseGamePanels.Add(id, panel);
