@@ -10,7 +10,6 @@ internal abstract class ModifierPanelBase : MonoBehaviour {
     public event Action<ModifierPanelBase, bool>? ModifierStateChangedEvent;
 
     private Toggle _toggle = null!;
-    public GameplayModifierToggle _modifierToggle = null!;
 
     public void SetModifierActive(bool active) {
         _toggle.isOn = active;

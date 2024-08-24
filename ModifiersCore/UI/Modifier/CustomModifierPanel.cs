@@ -6,6 +6,7 @@ internal class CustomModifierPanel : ModifierPanelBase {
     public override IModifier Modifier => _modifier;
 
     private CustomModifierVisualsController _visualsController = null!;
+    private GameplayModifierToggle _modifierToggle = null!;
 
     protected override void Awake() {
         base.Awake();
