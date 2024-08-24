@@ -75,6 +75,10 @@ public static class ModifierUtils {
 
     #region Methods
 
+    public static bool TryGetBaseModifierIdBySerializedName(string name, out string id) {
+        return defaultModifierIds.TryGetValue(name, out id);
+    }
+    
     public static string GetBaseModifierIdBySerializedName(string name) {
         if (!defaultModifierIds.TryGetValue(name, out name)) {
             throw new ArgumentException($"Unknown base game modifier name: {name}");
