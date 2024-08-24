@@ -56,11 +56,3 @@ public interface IModifier {
     /// </summary>
     IEnumerable<string>? RequiredByModifiers { get; }
 }
-
-public static class DefaultCategory {
-    public static string ENERGY = "ENERGY";
-    public static string BEATMAP = "BEATMAP";
-    public static string VISUALS = "VISUALS";
-    public static string SCORING = "SCORING";
-    public static string SPEED = "SPEED";
-}
