@@ -1,13 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace ModifiersCore;
 
 internal class ModifierPanelSpawner : MonoBehaviour {
     #region Setup
 
-    private Dictionary<GameplayModifierParamsSO, Toggle> TogglesForModifiers => _patcher.Panel._toggleForGameplayModifierParam;
     private RectTransform ModifiersSection => _patcher.ModifiersSection;
 
     private ModifiersCoreUIPatcher _patcher = null!;
@@ -23,7 +21,9 @@ internal class ModifierPanelSpawner : MonoBehaviour {
         var toggles = _patcher.ModifiersSection.GetComponentsInChildren<GameplayModifierToggle>();
         foreach (var toggle in toggles) {
             var panel = toggle.gameObject.AddComponent<ModifierPanel>();
-            var id = toggle.gameplayModifier.modifierNameLocalizationKey;
+            var id = ModifierUtils.ModifierLocalizationKeyToId(toggle.gameplayModifier.modifierNameLocalizationKey);
+            var modifier = ModifiersManager.AllModifiers[id];
+            panel.SetModifier(modifier);
             _baseGamePanels.Add(id, panel);
             _spawnedPanels.Add(id, panel);
         }
@@ -33,17 +33,17 @@ internal class ModifierPanelSpawner : MonoBehaviour {
 
     #region Spawner
 
-    public ICollection<ModifierPanel> Panels => _spawnedPanels.Values;
+    public ICollection<ModifierPanelBase> Panels => _spawnedPanels.Values;
 
-    private readonly Dictionary<string, ModifierPanel> _spawnedPanels = new();
-    private readonly Dictionary<string, ModifierPanel> _baseGamePanels = new();
+    private readonly Dictionary<string, ModifierPanelBase> _spawnedPanels = new();
+    private readonly Dictionary<string, ModifierPanelBase> _baseGamePanels = new();
     private readonly Stack<CustomModifierPanel> _pooledPanels = new();
 
-    public ModifierPanel GetSpawnedPanel(string id) {
+    public ModifierPanelBase GetSpawnedPanel(string id) {
         return _spawnedPanels[id];
     }
 
-    public ModifierPanel SpawnPanel(ICustomModifier modifier) {
+    public ModifierPanelBase SpawnPanel(ICustomModifier modifier) {
         CustomModifierPanel panel;
         if (_pooledPanels.Count > 0) {
             //
@@ -55,26 +55,18 @@ internal class ModifierPanelSpawner : MonoBehaviour {
             panel = go.AddComponent<CustomModifierPanel>();
         }
         //setting up
-        var modifierParams = ModifiersManager.ModifierParams[modifier.Id];
-        var actualToggle = panel.Toggle;
-        panel.SetModifier(modifier, modifierParams);
-        //saving
-        TogglesForModifiers[modifierParams] = actualToggle;
+        panel.SetModifier(modifier);
         _spawnedPanels[modifier.Id] = panel;
-        //returning
         return panel;
     }
 
     public void DespawnPanel(string id) {
         if (_baseGamePanels.ContainsKey(id)) return;
-        //fetching
         var panel = (CustomModifierPanel)_spawnedPanels[id];
-        var modifier = panel.ModifierToggle.gameplayModifier;
         //
         panel.gameObject.SetActive(false);
         _spawnedPanels.Remove(id);
         _pooledPanels.Push(panel);
-        TogglesForModifiers.Remove(modifier);
     }
 
     #endregion

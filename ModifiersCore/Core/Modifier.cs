@@ -9,7 +9,9 @@ internal record Modifier(
     string Description,
     Sprite Icon,
     float Multiplier,
-    IEnumerable<string>? MutuallyExclusives = null,
-    IEnumerable<string>? Requires = null,
-    IEnumerable<string>? RequiredBy = null
+    IEnumerable<string>? Categories = null,
+    IEnumerable<string>? MutuallyExclusiveCategories = null,
+    IEnumerable<string>? MutuallyExclusiveModifiers = null,
+    IEnumerable<string>? RequiresModifiers = null,
+    IEnumerable<string>? RequiredByModifiers = null
 ) : IModifier;

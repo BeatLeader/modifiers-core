@@ -56,22 +56,47 @@ internal class ModifiersCorePanel : MonoBehaviour {
 
     #region SetModifierActive
 
-    private void SetModifiersActive(IEnumerable<GameplayModifierParamsSO> modifiers, bool state) {
+    private void SetModifiersActive(IEnumerable<string>? modifiers, bool state, string? except = null) {
+        if (modifiers == null) return;
         foreach (var modifier in modifiers) {
-            Panel.SetToggleValueWithGameplayModifierParams(modifier, state);
+            if (modifier == except) continue;
+            var panel = _spawner.GetSpawnedPanel(modifier);
+            panel.SetModifierActive(state);
         }
     }
 
-    public void SetModifierActive(GameplayModifierParamsSO modifier, bool state) {
+    private void SetCategoriesActive(
+        IEnumerable<string>? categories,
+        IDictionary<string, HashSet<string>> cache,
+        bool state, 
+        string? except = null
+    ) {
+        if (categories == null) return;
+        foreach (var category in categories) {
+            cache.TryGetValue(category, out var modifiers);
+            SetModifiersActive(modifiers, state, except);
+        }
+    }
+
+    public void SetModifierActive(IModifier modifier, bool state) {
         if (Panel._changingGameplayModifierToggles) {
             return;
         }
         Panel._changingGameplayModifierToggles = true;
         if (state) {
-            SetModifiersActive(modifier.mutuallyExclusives, false);
-            SetModifiersActive(modifier.requires, true);
+            //disabling categories that cannot be used with this modifier
+            SetCategoriesActive(modifier.MutuallyExclusiveCategories, ModifiersManager.CategorizedModifiers, false, modifier.Id);
+            //disabling modifiers that cannot be used with this category
+            SetCategoriesActive(modifier.Categories, ModifiersManager.ExclusiveCategories, false, modifier.Id);
+            //disabling modifiers that cannot be used with this one
+            ModifiersManager.ExclusiveModifiers.TryGetValue(modifier.Id, out var exclusiveModifiers);
+            SetModifiersActive(exclusiveModifiers, false);
+            //enabling modifiers that required for this one to work
+            SetModifiersActive(modifier.RequiresModifiers, true);
         } else {
-            SetModifiersActive(modifier.requiredBy, false);
+            //disabling modifiers that rely on this one
+            ModifiersManager.DependentModifiers.TryGetValue(modifier.Id, out var dependOnThis);
+            SetModifiersActive(dependOnThis, false);
         }
         Panel._gameplayModifiers = Panel._gameplayModifiersModel.CreateGameplayModifiers(Panel.GetToggleValueWithGameplayModifierParams);
         Panel._changingGameplayModifierToggles = false;
@@ -82,7 +107,7 @@ internal class ModifiersCorePanel : MonoBehaviour {
 
     #region Callbacks
 
-    private void HandleModifierSpawnedInternal(ModifierPanel panel) {
+    private void HandleModifierSpawnedInternal(ModifierPanelBase panel) {
         panel.ModifierStateChangedEvent += HandleModifierStateChanged;
     }
 
@@ -103,8 +128,8 @@ internal class ModifiersCorePanel : MonoBehaviour {
         RefreshModifiersOrder();
     }
 
-    private void HandleModifierStateChanged(ModifierPanel panel, bool state) {
-        SetModifierActive(panel.ModifierToggle.gameplayModifier, state);
+    private void HandleModifierStateChanged(ModifierPanelBase panel, bool state) {
+        SetModifierActive(panel.Modifier, state);
     }
 
     #endregion
