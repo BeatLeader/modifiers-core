@@ -59,8 +59,20 @@ public static partial class ModifiersManager {
         if (!HasModifierWithId(id)) {
             throw new InvalidOperationException("A modifier with such identifier does not exist");
         }
-        ConfigFileData.Instance.ModifierStates.TryGetValue(id, out var state);
-        return state;
+        //if custom
+        if (InternalCustomModifiers.ContainsKey(id)) {
+            ConfigFileData.Instance.ModifierStates.TryGetValue(id, out var state);
+            return state;
+        }
+        //if base game
+        var playerData = PlayerDataModelPatch.PlayerData;
+        if (playerData == null) {
+            throw new InvalidOperationException("Cannot get a base game modifier state until player data is loaded");
+        }
+        if (!modifierGetters.TryGetValue(id, out var getter)) {
+            throw new InvalidOperationException("Unknown base game modifier");
+        }
+        return getter(playerData.gameplayModifiers);
     }
 
     /// <summary>Sets the modifier state.</summary>

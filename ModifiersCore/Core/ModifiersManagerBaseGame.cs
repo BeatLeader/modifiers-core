@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -49,7 +50,25 @@ public static partial class ModifiersManager {
         { "FS", [DefaultCategory.SPEED] },
         { "SF", [DefaultCategory.SPEED] },
     };
-    
+
+    private static readonly Dictionary<string, Func<GameplayModifiers, bool>> modifierGetters = new() {
+        { "IF", x => x.instaFail },
+        { "BE", x => x.energyType is GameplayModifiers.EnergyType.Battery },
+        { "NB", x => x.noBombs },
+        { "NO", x => x.enabledObstacleType is GameplayModifiers.EnabledObstacleType.NoObstacles },
+        { "NA", x => x.noArrows },
+        { "GN", x => x.ghostNotes },
+        { "DA", x => x.disappearingArrows },
+        { "SC", x => x.smallCubes },
+        { "PM", x => x.proMode },
+        { "SA", x => x.strictAngles },
+        { "SS", x => x.songSpeed is GameplayModifiers.SongSpeed.Slower },
+        { "FS", x => x.songSpeed is GameplayModifiers.SongSpeed.Faster },
+        { "SF", x => x.songSpeed is GameplayModifiers.SongSpeed.SuperFast },
+        { "ZM", x => x.zenMode },
+        { "NF", x => x.noFailOn0Energy },
+    };
+
     internal static Dictionary<string, GameplayModifierParamsSO> GameplayModifierParams = new();
 
     private static IEnumerable<string>? GetCategories(string id) {
