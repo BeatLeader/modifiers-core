@@ -69,10 +69,7 @@ public static partial class ModifiersManager {
         if (playerData == null) {
             throw new InvalidOperationException("Cannot get a base game modifier state until player data is loaded");
         }
-        if (!modifierGetters.TryGetValue(id, out var getter)) {
-            throw new InvalidOperationException("Unknown base game modifier");
-        }
-        return getter(playerData.gameplayModifiers);
+        return playerData.gameplayModifiers.GetGameplayModifierState(id);
     }
 
     /// <summary>Sets the modifier state.</summary>
