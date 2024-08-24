@@ -28,29 +28,29 @@ public static class ModifierUtils {
     };
 
     private static readonly Dictionary<string, string> modifierCategories = new() {
-        { "IF", DefaultCategory.ENERGY },
-        { "BE", DefaultCategory.ENERGY },
-        { "NB", DefaultCategory.BEATMAP },
-        { "NO", DefaultCategory.BEATMAP },
-        { "NA", DefaultCategory.BEATMAP },
-        { "GN", DefaultCategory.VISUALS },
-        { "DA", DefaultCategory.VISUALS },
-        { "SC", DefaultCategory.BEATMAP },
-        { "PM", DefaultCategory.SCORING },
-        { "SA", DefaultCategory.SCORING },
-        { "SS", DefaultCategory.SPEED },
-        { "FS", DefaultCategory.SPEED },
-        { "SF", DefaultCategory.SPEED }
+        { "IF", ModifierCategories.Energy },
+        { "BE", ModifierCategories.Energy },
+        { "NB", ModifierCategories.Beatmap },
+        { "NO", ModifierCategories.Beatmap },
+        { "NA", ModifierCategories.Beatmap },
+        { "GN", ModifierCategories.Visuals },
+        { "DA", ModifierCategories.Visuals },
+        { "SC", ModifierCategories.Beatmap },
+        { "PM", ModifierCategories.Scoring },
+        { "SA", ModifierCategories.Scoring },
+        { "SS", ModifierCategories.Speed },
+        { "FS", ModifierCategories.Speed },
+        { "SF", ModifierCategories.Speed }
     };
 
     private static readonly Dictionary<string, string> modifierExclusiveCategory = new() {
-        { "IF", DefaultCategory.ENERGY },
-        { "BE", DefaultCategory.ENERGY },
-        { "GN", DefaultCategory.VISUALS },
-        { "DA", DefaultCategory.VISUALS },
-        { "SS", DefaultCategory.SPEED },
-        { "FS", DefaultCategory.SPEED },
-        { "SF", DefaultCategory.SPEED }
+        { "IF", ModifierCategories.Energy },
+        { "BE", ModifierCategories.Energy },
+        { "GN", ModifierCategories.Visuals },
+        { "DA", ModifierCategories.Visuals },
+        { "SS", ModifierCategories.Speed },
+        { "FS", ModifierCategories.Speed },
+        { "SF", ModifierCategories.Speed }
     };
 
     private static readonly Dictionary<string, Func<GameplayModifiers, bool>> modifierGetters = new() {
