@@ -9,9 +9,10 @@ namespace ModifiersCore;
 
 [HarmonyPatch]
 internal static class GameplayModifiersPanelPatch {
+    internal static ModifiersCorePanel CorePanel;
     [HarmonyPatch(typeof(GameplayModifiersPanelController), "Awake"), HarmonyPostfix]
     private static void AwakePostfix(GameplayModifiersPanelController __instance) {
-        __instance.gameObject.AddComponent<ModifiersCorePanel>();
+        CorePanel = __instance.gameObject.AddComponent<ModifiersCorePanel>();
     }
 
     [HarmonyPatch(typeof(GameplayModifiersPanelController), "RefreshTotalMultiplierAndRankUI"), HarmonyPrefix]

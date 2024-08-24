@@ -24,6 +24,7 @@ internal class ModifierPanelSpawner : MonoBehaviour {
             var id = ModifiersManager.defaultModifierIds[toggle.gameplayModifier.modifierNameLocalizationKey];
             var modifier = ModifiersManager.AllModifiers[id];
             panel.SetModifier(modifier);
+            panel._modifierToggle = toggle;
             _baseGamePanels.Add(id, panel);
             _spawnedPanels.Add(id, panel);
         }

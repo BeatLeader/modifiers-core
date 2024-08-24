@@ -107,6 +107,10 @@ public static partial class ModifiersManager {
         ModifierRemovedEvent?.Invoke(modifier);
     }
 
+    public static (GameplayModifierToggle, IModifier)[]? Toggles() {
+        return GameplayModifiersPanelPatch.CorePanel?._spawner?.Panels?.Select(p => (p._modifierToggle, p.Modifier))?.ToArray();
+    }
+
     private static void AddCustomModifierInternal(ICustomModifier modifier, bool checkDependencies) {
         if (HasModifierWithId(modifier.Id)) {
             throw new InvalidOperationException("A modifier with the same key is already added");

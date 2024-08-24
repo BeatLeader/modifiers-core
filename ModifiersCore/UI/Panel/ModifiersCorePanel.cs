@@ -11,7 +11,7 @@ internal class ModifiersCorePanel : MonoBehaviour {
     private GameplayModifiersPanelController Panel => _patcher.Panel;
 
     private ModifiersCoreUIPatcher _patcher = null!;
-    private ModifierPanelSpawner _spawner = null!;
+    internal ModifierPanelSpawner _spawner = null!;
     private GridLayoutGroup _modifiersSectionGroup = null!;
 
     private void Awake() {
