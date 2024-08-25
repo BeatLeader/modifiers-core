@@ -86,6 +86,10 @@ public static class ModifierUtils {
         return name;
     }
 
+    public static bool IsValidBaseGameModifier(string id) {
+        return modifierGetters.ContainsKey(id);
+    }
+    
     public static bool GetGameplayModifierState(this GameplayModifiers modifiers, string id) {
         if (!modifierGetters.TryGetValue(id, out var getter)) {
             throw new ArgumentException($"Unknown base game modifier id: {id}");
