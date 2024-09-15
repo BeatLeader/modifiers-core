@@ -1,9 +1,8 @@
 using System.Collections.Generic;
-using BGLib.Polyglot;
+using Polyglot;
 using HarmonyLib;
 using IPA.Utilities;
 using UnityEngine;
-using UnityEngine.Pool;
 
 namespace ModifiersCore;
 
@@ -17,7 +16,7 @@ internal static class GameplayModifiersPanelPatch {
 
     [HarmonyPatch(typeof(GameplayModifiersPanelController), "RefreshTotalMultiplierAndRankUI"), HarmonyPrefix]
     private static bool RefreshRankAndMultiplierPrefix(GameplayModifiersPanelController __instance) {
-        var modifiers = ListPool<IModifier>.Get();
+        var modifiers = new List<IModifier>();
         AddEnabledModifiers(__instance, modifiers);
         var totalMultiplier = GetTotalMultiplier(__instance._gameplayModifiersModel, modifiers, 1f);
         var color = totalMultiplier >= 1.0 ? __instance._positiveColor : __instance._negativeColor;
@@ -29,7 +28,6 @@ internal static class GameplayModifiersPanelPatch {
         var rankName = RankModel.GetRankName(maxRank);
         __instance._maxRankValueText.text = rankName;
         __instance._maxRankValueText.color = color;
-        ListPool<IModifier>.Release(modifiers);
         return false;
     }
 

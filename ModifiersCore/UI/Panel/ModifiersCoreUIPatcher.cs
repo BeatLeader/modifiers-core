@@ -26,7 +26,7 @@ internal class ModifiersCoreUIPatcher : MonoBehaviour {
     private RectTransform _scrollbarRect = null!;
 
     private void PatchUI() {
-        var context = FindObjectsByType<Context>(FindObjectsSortMode.InstanceID).Last();
+        var context = FindObjectsOfType<Context>().Last();
         var container = context.Container;
         //creating scroll view
         var scrollContainer = new GameObject("ScrollContainer");

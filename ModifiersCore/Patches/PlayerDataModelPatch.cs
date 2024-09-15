@@ -3,7 +3,7 @@ using JetBrains.Annotations;
 
 namespace ModifiersCore;
 
-[HarmonyPatch(typeof(PlayerDataModel), "Inject")]
+[HarmonyPatch(typeof(PlayerDataModel), "Load")]
 internal static class PlayerDataModelPatch {
     public static PlayerData? PlayerData => _playerDataModel?.playerData;
 
