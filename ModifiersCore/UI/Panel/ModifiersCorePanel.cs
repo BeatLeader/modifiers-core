@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
+using HMUI;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace ModifiersCore;
 
@@ -12,13 +11,10 @@ internal class ModifiersCorePanel : MonoBehaviour {
 
     private ModifiersCoreUIPatcher _patcher = null!;
     internal ModifierPanelSpawner _spawner = null!;
-    private GridLayoutGroup _modifiersSectionGroup = null!;
 
     private void Awake() {
         _patcher = gameObject.AddComponent<ModifiersCoreUIPatcher>();
         _spawner = gameObject.AddComponent<ModifierPanelSpawner>();
-        _modifiersSectionGroup = _patcher.ModifiersSection.GetComponent<GridLayoutGroup>();
-        _modifiersSectionGroup.enabled = true;
     }
 
     private void Start() {
@@ -28,15 +24,20 @@ internal class ModifiersCorePanel : MonoBehaviour {
         }
         ModifiersManager.ModifierAddedEvent += HandleModifierAdded;
         ModifiersManager.ModifierRemovedEvent += HandleModifierRemoved;
+        _patcher.TabSelector.didSelectCellEvent += HandleTabSelected;
         //handling already added modifiers
         foreach (var modifier in ModifiersManager.CustomModifiers) {
             HandleModifierAddedInternal(modifier);
         }
+        RefreshTabs();
     }
 
     private void OnDestroy() {
         ModifiersManager.ModifierAddedEvent -= HandleModifierAdded;
         ModifiersManager.ModifierRemovedEvent -= HandleModifierRemoved;
+        if (_patcher.TabSelector != null) {
+            _patcher.TabSelector.didSelectCellEvent -= HandleTabSelected;
+        }
     }
 
     #endregion
@@ -44,12 +45,36 @@ internal class ModifiersCorePanel : MonoBehaviour {
     #region Modifiers
 
     private void RefreshModifiersOrder() {
+        //base game modifiers keep their places, only the custom section is laid out
         var index = 0;
-        foreach (var modifier in ModifiersManager.Modifiers) {
+        foreach (var modifier in ModifiersManager.CustomModifiers) {
             var toggle = _spawner.GetSpawnedPanel(modifier.Id);
             toggle.transform.SetSiblingIndex(index);
             index++;
         }
+    }
+
+    #endregion
+
+    #region Tabs
+
+    private void RefreshTabs() {
+        //there is nothing to switch to without custom modifiers
+        var hasCustomModifiers = ModifiersManager.CustomModifiers.Count > 0;
+        _patcher.TabSelector.gameObject.SetActive(hasCustomModifiers);
+        ShowTab(hasCustomModifiers ? ConfigFileData.Instance.SelectedTab : ModifiersTab.Vanilla);
+    }
+
+    private void ShowTab(ModifiersTab tab) {
+        _patcher.TabSelector.SelectCellWithNumber((int)tab);
+        _patcher.ModifiersSection.gameObject.SetActive(tab is ModifiersTab.Vanilla);
+        _patcher.CustomModifiersContainer.gameObject.SetActive(tab is ModifiersTab.Custom);
+    }
+
+    private void HandleTabSelected(SegmentedControl segmentedControl, int cellIdx) {
+        var tab = (ModifiersTab)cellIdx;
+        ConfigFileData.Instance.SelectedTab = tab;
+        ShowTab(tab);
     }
 
     #endregion
@@ -119,6 +144,7 @@ internal class ModifiersCorePanel : MonoBehaviour {
     private void HandleModifierAdded(ICustomModifier modifier) {
         HandleModifierAddedInternal(modifier);
         RefreshModifiersOrder();
+        RefreshTabs();
     }
 
     private void HandleModifierRemoved(ICustomModifier modifier) {
@@ -126,6 +152,7 @@ internal class ModifiersCorePanel : MonoBehaviour {
         panel.ModifierStateChangedEvent -= HandleModifierStateChanged;
         _spawner.DespawnPanel(modifier.Id);
         RefreshModifiersOrder();
+        RefreshTabs();
     }
 
     private void HandleModifierStateChanged(ModifierPanelBase panel, bool state) {

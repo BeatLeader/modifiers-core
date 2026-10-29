@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace ModifiersCore;
 
@@ -41,6 +42,9 @@ internal class ConfigFileData {
     #region Config
 
     public Dictionary<string, bool> ModifierStates { get; set; } = new();
+
+    [JsonConverter(typeof(StringEnumConverter))]
+    public ModifiersTab SelectedTab { get; set; } = ModifiersTab.Vanilla;
 
     #endregion
 }

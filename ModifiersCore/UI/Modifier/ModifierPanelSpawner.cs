@@ -7,6 +7,7 @@ internal class ModifierPanelSpawner : MonoBehaviour {
     #region Setup
 
     private RectTransform ModifiersSection => _patcher.ModifiersSection;
+    private RectTransform CustomModifiersSection => _patcher.CustomModifiersSection;
 
     private ModifiersCoreUIPatcher _patcher = null!;
     private GameObject _modifierPrefab = null!;
@@ -54,7 +55,7 @@ internal class ModifierPanelSpawner : MonoBehaviour {
             panel.gameObject.SetActive(true);
         } else {
             //
-            var go = Instantiate(_modifierPrefab, ModifiersSection, false);
+            var go = Instantiate(_modifierPrefab, CustomModifiersSection, false);
             panel = go.AddComponent<CustomModifierPanel>();
         }
         //setting up
