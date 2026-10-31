@@ -34,6 +34,7 @@ public static partial class ModifiersManager {
     internal static readonly Dictionary<string, HashSet<string>> ExclusiveCategories = new();
     internal static readonly Dictionary<string, HashSet<string>> CategorizedModifiers = new();
 
+    private static readonly Dictionary<string, string[]?> exclusiveModifierOverrides = new();
     private static readonly List<string> buffer = new();
 
     #region API
@@ -116,6 +117,27 @@ public static partial class ModifiersManager {
         ModifierRemovedEvent?.Invoke(modifier);
     }
 
+    public static void SetMutuallyExclusiveModifiers(string id, IEnumerable<string>? modifiers) {
+        if (!AllModifiers.TryGetValue(id, out var modifier)) {
+            throw new InvalidOperationException("A modifier with such identifier does not exist");
+        }
+        var previous = GetMutuallyExclusiveModifiers(modifier);
+        if (previous != null) {
+            foreach (var other in previous) {
+                if (AllModifiers.TryGetValue(other, out var otherModifier) && (GetMutuallyExclusiveModifiers(otherModifier)?.Contains(id) ?? false)) continue;
+                if (ExclusiveModifiers.TryGetValue(other, out var set)) set.Remove(id);
+                if (ExclusiveModifiers.TryGetValue(id, out set)) set.Remove(other);
+            }
+        }
+        var list = modifiers?.ToArray();
+        exclusiveModifierOverrides[id] = list;
+        AddToCache(id, list, ExclusiveModifiers, true);
+    }
+
+    private static IEnumerable<string>? GetMutuallyExclusiveModifiers(IModifier modifier) {
+        return exclusiveModifierOverrides.TryGetValue(modifier.Id, out var overridden) ? overridden : modifier.MutuallyExclusiveModifiers;
+    }
+
     public static (GameplayModifierToggle, IModifier)[]? Toggles() {
         return GameplayModifiersPanelPatch.CorePanel?._spawner?.Panels?.Select(p => (p._modifierToggle, p.Modifier))?.ToArray();
     }
@@ -124,8 +146,8 @@ public static partial class ModifiersManager {
         if (HasModifierWithId(modifier.Id)) {
             throw new InvalidOperationException("A modifier with the same key is already added");
         }
-        if (modifier.Id.Length < 2 || modifier.Id.Length > 3) {
-            throw new InvalidOperationException("A modifier key should be 2 or 3 characters long (example: NF)");
+        if (modifier.Id.Length < 2 || modifier.Id.Length > 4) {
+            throw new InvalidOperationException("A modifier key should be 2 to 4 characters long (example: NF)");
         }
         if (checkDependencies && !EnsureDependenciesExist(modifier)) {
             InternalPendingModifiers[modifier.Id] = modifier;

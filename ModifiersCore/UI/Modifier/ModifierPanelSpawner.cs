@@ -47,6 +47,10 @@ internal class ModifierPanelSpawner : MonoBehaviour {
         return _spawnedPanels[id];
     }
 
+    public bool TryGetSpawnedPanel(string id, out ModifierPanelBase panel) {
+        return _spawnedPanels.TryGetValue(id, out panel);
+    }
+
     public ModifierPanelBase SpawnPanel(ICustomModifier modifier) {
         CustomModifierPanel panel;
         if (_pooledPanels.Count > 0) {

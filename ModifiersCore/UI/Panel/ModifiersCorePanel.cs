@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using System.Reflection;
+using HarmonyLib;
 using HMUI;
 using UnityEngine;
 
@@ -85,7 +88,7 @@ internal class ModifiersCorePanel : MonoBehaviour {
         if (modifiers == null) return;
         foreach (var modifier in modifiers) {
             if (modifier == except) continue;
-            var panel = _spawner.GetSpawnedPanel(modifier);
+            if (!_spawner.TryGetSpawnedPanel(modifier, out var panel)) continue;
             panel.SetModifierActive(state);
         }
     }
@@ -126,7 +129,13 @@ internal class ModifiersCorePanel : MonoBehaviour {
         Panel._gameplayModifiers = Panel._gameplayModifiersModel.CreateGameplayModifiers(Panel.GetToggleValueWithGameplayModifierParams);
         Panel._changingGameplayModifierToggles = false;
         Panel.RefreshTotalMultiplierAndRankUI();
+        (modifiersChangedEventField.GetValue(Panel) as Action)?.Invoke();
     }
+
+    private static readonly FieldInfo modifiersChangedEventField = AccessTools.Field(
+        typeof(GameplayModifiersPanelController),
+        nameof(GameplayModifiersPanelController.didChangeGameplayModifiersEvent)
+    );
 
     #endregion
 
